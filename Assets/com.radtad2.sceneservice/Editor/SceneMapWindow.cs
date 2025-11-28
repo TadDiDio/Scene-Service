@@ -96,6 +96,13 @@ public class SceneMapWindow : EditorWindow
 
         if (_settingsSO.ApplyModifiedProperties()) EditorUtility.SetDirty(_settings);
 
+        var message = _settings.Validate();
+
+        if (!string.IsNullOrEmpty(message))
+        {
+            EditorGUILayout.HelpBox(message, MessageType.Error);
+        }
+        
         EditorGUILayout.EndVertical();
     }
     

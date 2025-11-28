@@ -5,16 +5,21 @@ using Eflatun.SceneReference;
 namespace SceneService
 {
     [Serializable]
-    public struct SceneGroup
+    public class SceneGroup
     {
+        /// <summary>
+        /// The name of this group.
+        /// </summary>
         public string GroupName;
-        public List<SceneData> Scenes;
-    }
-    
-    [Serializable]
-    public class SceneData {
-        public SceneReference Reference;
-        public string Name => Reference.Name;
-        public bool Active;
+        
+        /// <summary>
+        /// The main scene to load and set as active.
+        /// </summary>
+        public SceneReference ActiveScene;
+        
+        /// <summary>
+        /// All scenes that the active scene depends on.
+        /// </summary>
+        public List<SceneReference> Dependencies;
     }
 }

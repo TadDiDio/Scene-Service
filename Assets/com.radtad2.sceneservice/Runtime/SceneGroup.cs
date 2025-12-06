@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Eflatun.SceneReference;
 
 namespace SceneService
@@ -21,5 +22,11 @@ namespace SceneService
         /// All scenes that the active scene depends on.
         /// </summary>
         public List<SceneReference> Dependencies;
+
+        /// <summary>
+        /// Gets a new list of all scenes in this group.
+        /// </summary>
+        /// <returns>The scene list.</returns>
+        public List<SceneReference> All() => new(Dependencies) { ActiveScene };
     }
 }

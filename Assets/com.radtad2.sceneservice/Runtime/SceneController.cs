@@ -8,49 +8,32 @@ using UnityEngine.SceneManagement;
 
 namespace SceneService
 {
-    public class SceneController : IDisposable
+    public class SceneController
     {
-        /// <summary>
-        /// Invoked when a scene group begins loading.
-        /// </summary>
-        public event Action OnLoadStarted;
+        internal event Action OnLoadStarted;
+        internal event Action<float> OnLoadProgressed;
+        internal event Action OnLoadCompleted;
         
-        /// <summary>
-        /// Invoked when a load group progresses.
-        /// </summary>
-        public event Action<float> OnLoadProgressed;
-        
-        /// <summary>
-        /// Invoked when a scene group completes loading.
-        /// </summary>
-        public event Action OnLoadCompleted;
-        
-        private const int PollIntervalMillis = 50;
-
-        private bool _loadingGroup;
-        
+        private bool _isLoadingGroup;
         private SceneMap _sceneMap;
         private SceneGroup _activeGroup;
         private List<SceneReference> _extraScenes = new();
-        private ISceneManager _defaultManager = new UnitySceneManager();
         
-        public SceneController(SceneMap sceneMap)
+        internal SceneController(SceneMap sceneMap)
         {
             _sceneMap = sceneMap;
-            SceneManager.LoadScene(_sceneMap.BootstrapScene.Path, LoadSceneMode.Single);
         }
 
-        /// <summary>
-        /// Loads a group of scenes additively and unloads the currently active group if there is one.
-        /// </summary>
-        /// <param name="newGroup">The group to load.</param>
-        /// <param name="overrideManager">An override scene manager to specify how each scene should be loaded.</param>
-        /// <param name="reloadCommonDependencies">Whether to reload dependencies of this group that are already loaded.</param>
-        public async Task LoadGroupAsync(SceneGroup newGroup, ISceneManager overrideManager = null, bool reloadCommonDependencies = false)
+        internal void Bootstrap()
         {
-            if (_loadingGroup)
+            SceneManager.LoadScene(_sceneMap.BootstrapScene.Path, LoadSceneMode.Single);
+        }
+        
+        internal async Task LoadGroupAsync(SceneGroup newGroup, ISceneManager manager, ReloadPolicy reloadPolicy = ReloadPolicy.All)
+        {
+            if (_isLoadingGroup)
             {
-                Debug.LogError("Attempted to load a group while one was already loading. This is not allowed.");
+                Debug.LogError("Attempted to load a group while one was already loading. This is not allowed and will be cancelled.");
                 return;
             }
 
@@ -62,48 +45,36 @@ namespace SceneService
             
             try
             {
-                _loadingGroup = true;
-             
-                var manager = overrideManager ?? _defaultManager;
+                _isLoadingGroup = true;
 
-                if (newGroup == _activeGroup)
-                {
-                    await ReloadActiveGroupAsync(manager, !reloadCommonDependencies);
-                    return;
-                }
-
-                // Scenes to load
-                var scenesToLoad = new List<SceneReference>(newGroup.Dependencies) { newGroup.ActiveScene };
+                // Group scenes by operation
+                var scenesToLoad = newGroup.All();
+                var scenesToUnload = _activeGroup.Dependencies.Concat(_extraScenes).Append(_activeGroup.ActiveScene).ToList();
                 
-                // Currently loaded dependencies
-                var loadedDependencies = _activeGroup.Dependencies.ToList();
-                loadedDependencies.AddRange(_extraScenes);
-                loadedDependencies = loadedDependencies.Where(r => r.LoadedScene.isLoaded).ToList();
+                reloadPolicy.Decompose(out var active, out var dependencies, out var extras);
 
-                // Scenes to unload
-                var scenesToUnload = new List<SceneReference>(loadedDependencies);
-                if (_activeGroup.ActiveScene.LoadedScene.isLoaded) scenesToUnload.Add(_activeGroup.ActiveScene);
-                
-                if (!reloadCommonDependencies)
+                void RemoveIfNotReloaded(IEnumerable<SceneReference> scenes, bool shouldReload)
                 {
-                    var commonLoadedDependencies = new List<SceneReference>();
-                    foreach (var loaded in loadedDependencies)
+                    if (shouldReload) return;
+                    
+                    foreach (var scene in scenes)
                     {
-                        if (newGroup.Dependencies.Any(toLoad => toLoad.Guid == loaded.Guid))
-                        {
-                            commonLoadedDependencies.Add(loaded);
-                        }
-                    }
+                        if (!scene.IsSafeAndLoaded()) continue;
+                        if (!scenesToLoad.ContainsByGuid(scene)) continue;
 
-                    foreach (var common in commonLoadedDependencies)
-                    {
-                        scenesToLoad.Remove(common);
-                        scenesToUnload.Remove(common);
+                        scenesToLoad.RemoveByGuid(scene);
+                        scenesToUnload.RemoveByGuid(scene);
                     }
                 }
                 
+                RemoveIfNotReloaded(new[] { _activeGroup.ActiveScene }, active);
+                RemoveIfNotReloaded(_activeGroup.Dependencies, dependencies);
+                RemoveIfNotReloaded(_extraScenes, extras);
+                
+                // Unload scenes
                 await UnloadScenesAsync(scenesToUnload, manager);
 
+                // Load scenes
                 OnLoadStarted?.Invoke();
                 var operation = new SceneOperationGroup();
                 foreach (var scene in scenesToLoad)
@@ -114,10 +85,11 @@ namespace SceneService
                 while (!operation.IsDone)
                 {
                     OnLoadProgressed?.Invoke(operation.Progress);
-                    await Task.Delay(PollIntervalMillis);
+                    await Task.Yield();
                 }
                 
                 _activeGroup = newGroup;
+                manager.SetActiveScene(_activeGroup.ActiveScene.Path);
                 OnLoadCompleted?.Invoke();
             }
             catch (Exception e)
@@ -126,122 +98,84 @@ namespace SceneService
             }
             finally
             {
-                _loadingGroup = false;
+                _isLoadingGroup = false;
             }
         }
         
-        /// <summary>
-        /// Loads a group of scenes additively and unloads the currently active group if there is one.
-        /// </summary>
-        /// <param name="groupName">The group to load.</param>
-        /// <param name="overrideManager">An override scene manager to specify how each scene should be loaded.</param>
-        /// <param name="reloadCommonDependencies">Whether to reload dependencies of this group that are already loaded.</param>
-        public async Task LoadGroupAsync(string groupName, ISceneManager overrideManager = null, bool reloadCommonDependencies = false)
+        internal async Task LoadGroupAsync(string groupName, ISceneManager manager, ReloadPolicy reloadPolicy = ReloadPolicy.All)
         {
-            var group = _sceneMap.Groups.FirstOrDefault(g => g.GroupName == groupName);
-
-            if (group == null) throw new ArgumentException($"No scene group with the name {groupName} was found.");
+            int count = _sceneMap.Groups.Count(g => g.GroupName == groupName); 
+            if (count != 1)
+            {
+                if (count == 0) throw new ArgumentException($"No scene group with the name {groupName} was found.");
+                throw new ArgumentException($"More than one group with the name {groupName} was found in scene map. These should be unique.");
+            }
             
-            await LoadGroupAsync(group, overrideManager, reloadCommonDependencies);
+            var group = _sceneMap.Groups.FirstOrDefault(g => g.GroupName == groupName);
+            await LoadGroupAsync(group, manager, reloadPolicy);
         }
 
-        /// <summary>
-        /// Adds a scene to the currently active scene group.
-        /// </summary>
-        /// <param name="scenePath">The scene to add.</param>
-        /// <param name="overrideManager">An override scene manager to specify how each scene should be loaded.</param>
-        public async Task AddToActiveGroupAsync(string scenePath, ISceneManager overrideManager = null)
+        internal async Task LoadSceneAsync(string scenePath, ISceneManager manager)
         {
-            var manager = overrideManager ?? _defaultManager;
-
             var operation = manager.LoadSceneAsync(scenePath);
-            while (!operation.IsDone())
-            {
-                await Task.Delay(PollIntervalMillis);
-            }
+            while (!operation.IsDone()) await Task.Yield();
 
             _extraScenes.Add(new SceneReference(scenePath));
         }
 
-        /// <summary>
-        /// Adds a scene to the currently active scene group.
-        /// </summary>
-        /// <param name="scene">The scene to add.</param>
-        /// <param name="overrideManager">An override scene manager to specify how each scene should be loaded.</param>
-        public async Task AddToActiveGroupAsync(SceneReference scene, ISceneManager overrideManager = null)
+        internal async Task ReloadActiveGroupAsync(ISceneManager manager, ReloadPolicy reloadPolicy = ReloadPolicy.All)
         {
-            await AddToActiveGroupAsync(scene.Path, overrideManager);
-        }
+            var scenesToUnload = new List<SceneReference>();
+            reloadPolicy.Decompose(out var active, out var dependencies, out var extras);
 
-        /// <summary>
-        /// Reloads the active scene group.
-        /// </summary>
-        /// <param name="overrideManager">An override scene manager to specify how each scene should be loaded.</param>
-        /// <param name="reloadOnlyActiveScene">Whether to reload only the active scene or all dependencies as well.</param>
-        public async Task ReloadActiveGroupAsync(ISceneManager overrideManager = null, bool reloadOnlyActiveScene = false)
-        {
-            var scenes = new List<SceneReference>();
-            if (reloadOnlyActiveScene)
-            {
-                scenes.Add(_activeGroup.ActiveScene);   
-            }
-            else
-            {
-                scenes = new List<SceneReference>(_activeGroup.Dependencies) { _activeGroup.ActiveScene};
-            }
+            if (active) scenesToUnload.Add(_activeGroup.ActiveScene);
+            if (dependencies) scenesToUnload.AddRange(_activeGroup.Dependencies);
+            if (extras) scenesToUnload.AddRange(_extraScenes);
             
-            await UnloadScenesAsync(scenes, overrideManager);
-            await LoadGroupAsync(_activeGroup, overrideManager, true);
+            await UnloadScenesAsync(scenesToUnload, manager);
+            await LoadGroupAsync(_activeGroup, manager, ReloadPolicy.None);
         }
 
-        /// <summary>
-        /// Unloads all scenes except for the bootstrapper and the active scene.
-        /// </summary>
-        /// <remarks>If you want to unload all scenes before loading another group, simply call LoadGroupAsync.</remarks>
-        /// <param name="overrideManager">An override scene manager to specify how each scene should be loaded.</param>
-        public async Task UnloadGroupDependenciesAsync(ISceneManager overrideManager = null)
+        internal async Task UnloadGroupDependenciesAsync(ISceneManager manager)
         {
-            
+            await UnloadScenesAsync(_activeGroup.Dependencies, manager);
         }
 
-        /// <summary>
-        /// Removes a scene from the active group. This cannot be the active scene.
-        /// </summary>
-        /// <param name="scenePath">The scene to remove.</param>
-        /// <param name="overrideManager">An override scene manager to specify how each scene should be loaded.</param>
-        public async Task RemoveFromActiveGroupAsync(string scenePath, ISceneManager overrideManager = null)
+        internal async Task UnloadExtrasAsync(ISceneManager manager)
         {
-            
-        }
-
-        /// <summary>
-        /// Removes a scene from the active group. This cannot be the active scene.
-        /// </summary>
-        /// <param name="scene">The scene to remove.</param>
-        /// <param name="overrideManager">An override scene manager to specify how each scene should be loaded.</param>s
-        public async Task RemoveFromActiveGroupAsync(SceneReference scene, ISceneManager overrideManager = null)
-        {
-            await RemoveFromActiveGroupAsync(scene.Path, overrideManager);
-        }
-
-        private async Task UnloadScenesAsync(IEnumerable<SceneReference> scenes, ISceneManager overrideManager = null)
-        {
-            await UnloadScenesAsync(scenes.Select(r => r.Path), overrideManager);
+            await UnloadScenesAsync(_extraScenes, manager);
         }
         
-        private async Task UnloadScenesAsync(IEnumerable<string> scenePaths, ISceneManager overrideManager = null)
+        internal async Task UnloadDependencyAsync(string scenePath, ISceneManager manager)
         {
-            var manager = overrideManager ?? _defaultManager;
+            if (_activeGroup.Dependencies.All(r => r.Path != scenePath)) return;
             
+            var operation = manager.UnloadSceneAsync(scenePath);
+            while (!operation.IsDone()) await Task.Yield();
+        }
+        
+        internal async Task UnloadExtraAsync(string scenePath, ISceneManager manager)
+        {
+            if (_extraScenes.All(r => r.Path != scenePath)) return;
+            
+            var operation = manager.UnloadSceneAsync(scenePath);
+            while (!operation.IsDone()) await Task.Yield();
+        }
+
+        private static async Task UnloadScenesAsync(IEnumerable<SceneReference> scenes, ISceneManager manager)
+        {
+            await UnloadScenesAsync(scenes.Select(r => r.Path), manager);
+        }
+        
+        private static async Task UnloadScenesAsync(IEnumerable<string> scenePaths, ISceneManager manager)
+        {
+            var operation = new SceneOperationGroup();
             foreach (var scenePath in scenePaths)
             {
-                
+                operation.AddOperation(manager.UnloadSceneAsync(scenePath));
             }
-        }
-        
-        public void Dispose()
-        {
             
+            while (!operation.IsDone) await Task.Yield();
         }
     }
 }

@@ -16,4 +16,13 @@ MonoBehaviour:
   BootstrapScene:
     asset: {fileID: 102900000, guid: 99c9720ab356a0642a771bea13969a05, type: 3}
     guid: 99c9720ab356a0642a771bea13969a05
-  Groups: []
+  Groups:
+  - GroupName: Level 1
+    ActiveScene:
+      asset: {fileID: 102900000, guid: b31257a037591c249a5531a92e7440e4, type: 3}
+      guid: b31257a037591c249a5531a92e7440e4
+    Dependencies:
+    - asset: {fileID: 0}
+      guid: 00000000000000000000000000000000
+    - asset: {fileID: 0}
+      guid: 00000000000000000000000000000000

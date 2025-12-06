@@ -35,17 +35,14 @@ namespace SceneService
         public List<SceneGroup> Groups;
 
         private static SceneMap _cached;
-        private static bool _loadedByGetter;
-
-        private void Awake()
-        {
-            if (!_loadedByGetter || _cached)
-                throw new InvalidOperationException(
-                    $"You may only access the {nameof(SceneMap)} instance by {nameof(SceneMap)}.{nameof(Active)}). This is to avoid accidental disk modifications during runtime!");
-        }
 
         public string Validate()
         {
+            if (Groups == null) return string.Empty;
+
+            if (BootstrapScene.UnsafeReason is not SceneReferenceUnsafeReason.None)
+                return "[SceneMap] Must reference a bootstrap scene.";
+            
             foreach (var group in Groups)
             {
                 var set = new HashSet<string>();
@@ -64,11 +61,27 @@ namespace SceneService
                     }
                 }
                 
-                // Also check active scene against dependencies
+                // Check bootstrapper scene against active scene
+                if (BootstrapScene.State is not SceneReferenceState.Unsafe &&
+                    group.ActiveScene.State is not SceneReferenceState.Unsafe &&
+                    BootstrapScene.Guid == group.ActiveScene.Guid)
+                {
+                    return $"[SceneMap] Bootstrap scene '{BootstrapScene.Name}' "
+                           + $"cannot be the active scene for group '{group.GroupName}'";
+                }
+                
+                // Check bootstrapper scene against dependencies
+                if (BootstrapScene.State is not SceneReferenceState.Unsafe && set.Contains(BootstrapScene.Guid))
+                {
+                    return $"[SceneMap] Bootstrap scene '{BootstrapScene.Name}' "
+                           + $"appeared in Dependencies for group '{group.GroupName}'";
+                }
+                
+                // Check active scene against dependencies
                 if (group.ActiveScene.State is not SceneReferenceState.Unsafe && set.Contains(group.ActiveScene.Guid))
                 {
                     return $"[SceneMap] Active scene '{group.ActiveScene.Name}' "
-                                        + $"appeared in Dependencies for group '{group.GroupName}'";
+                           + $"appeared in Dependencies for group '{group.GroupName}'";
                 }
             }
 
@@ -80,7 +93,6 @@ namespace SceneService
             get
             {
                 if (_cached) return _cached;
-                _loadedByGetter = true;
 
 #if UNITY_EDITOR
                 string guid = EditorPrefs.GetString(EditorKey, "");
@@ -96,17 +108,19 @@ namespace SceneService
 #endif
                 
                 if (!asset) throw new InvalidOperationException("SceneService: No active SceneMap loaded. Make sure to set one in Tools -> Scene Map Settings");
+
+                var error = asset.Validate();
+
+                if (!string.IsNullOrEmpty(error)) throw new InvalidOperationException(error);
                 
-                _cached = Instantiate(asset);
-                _cached.hideFlags = HideFlags.DontSave;
-                return _cached;
+                _cached = asset;
+                return asset;
             }
         }
 
         public void Dispose()
         {
             _cached = null;
-            _loadedByGetter = false;
         }
     }
 }

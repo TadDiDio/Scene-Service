@@ -25,7 +25,7 @@ public class SceneMapWindow : EditorWindow
         if (!string.IsNullOrEmpty(guid))
         {
             _assetPath = AssetDatabase.GUIDToAssetPath(guid);
-            _settings = AssetDatabase.LoadAssetAtPath<SceneMap>(_assetPath);
+            _settings = SceneMap.Active;
             _settingsSO = new SerializedObject(_settings);
         }
     }

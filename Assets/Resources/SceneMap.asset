@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: SceneMap
   m_EditorClassIdentifier: Assembly-CSharp::SceneService.SceneMap
   ConfigName: Release
+  LoadBootstrapperFirst: 1
   BootstrapScene:
     asset: {fileID: 102900000, guid: 99c9720ab356a0642a771bea13969a05, type: 3}
     guid: 99c9720ab356a0642a771bea13969a05

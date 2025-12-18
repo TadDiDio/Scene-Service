@@ -1,0 +1,8 @@
+{
+  "name": "SceneService",
+  "autoReferenced": true,
+  "rootNamespace": "SceneService",
+  "references": [
+    "Eflatun.SceneReference"
+  ]
+}

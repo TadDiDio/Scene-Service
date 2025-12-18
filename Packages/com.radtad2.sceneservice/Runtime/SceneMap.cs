@@ -25,6 +25,11 @@ namespace SceneService
         public string ConfigName = "Unnamed";
 
         /// <summary>
+        /// Whether to load the bootstrapper first or not.
+        /// </summary>
+        public bool LoadBootstrapperFirst = true;
+        
+        /// <summary>
         /// The scene to load first in single mode.
         /// </summary>
         public SceneReference BootstrapScene;
@@ -114,6 +119,8 @@ namespace SceneService
                 if (!string.IsNullOrEmpty(error)) throw new InvalidOperationException(error);
                 
                 _cached = asset;
+                
+                if (Application.isPlaying) SceneLogger.Error($"Loaded SceneMap '{asset.ConfigName}'");
                 return asset;
             }
         }

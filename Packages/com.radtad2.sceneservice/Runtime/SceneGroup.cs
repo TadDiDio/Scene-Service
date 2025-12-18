@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Eflatun.SceneReference;
+using UnityEngine;
 
 namespace SceneService
 {
@@ -21,12 +21,17 @@ namespace SceneService
         /// <summary>
         /// All scenes that the active scene depends on.
         /// </summary>
-        public List<SceneReference> Dependencies;
-
+        [SerializeField] private List<SceneReference> dependencies;
+        
+        /// <summary>
+        /// A readonly list of all dependencies.
+        /// </summary>
+        public IReadOnlyList<SceneReference> Dependencies => dependencies;
+        
         /// <summary>
         /// Gets a new list of all scenes in this group.
         /// </summary>
         /// <returns>The scene list.</returns>
-        public List<SceneReference> All() => new(Dependencies) { ActiveScene };
+        public List<SceneReference> All() => new(dependencies) { ActiveScene };
     }
 }

@@ -20,7 +20,11 @@ If you run into issues or have suggestions, feel free to open an issue on GitHub
 
 ## Installation
 
-In the package manager select Add by git url and paste the following:
+In the package manager select Install package from git url and paste the following two links. The first is a third party scene reference library which the scene service depends on and the second is the scene service:
+
+```bash
+https://github.com/starikcetin/Eflatun.SceneReference.git#4.1.1
+```
 
 ```bash
 https://github.com/TadDiDio/Scene-Service.git?path=Packages/com.radtad2.sceneservice#1.0.0

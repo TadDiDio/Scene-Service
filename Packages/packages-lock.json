@@ -10,14 +10,6 @@
       },
       "hash": "b849990020c30ac6ead4e4fb4881428f86dcde0d"
     },
-    "com.radtad2.sceneservice": {
-      "version": "file:com.radtad2.sceneservice",
-      "depth": 0,
-      "source": "embedded",
-      "dependencies": {
-        "com.eflatun.scenereference": "https://github.com/starikcetin/Eflatun.SceneReference.git#4.1.1"
-      }
-    },
     "com.unity.ai.navigation": {
       "version": "2.0.9",
       "depth": 0,

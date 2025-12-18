@@ -5,7 +5,4 @@
   "unity": "2022.3",
   "description": "An additive scene loader and bootstrapper.",
   "author": { "name": "Tad DiDio" },
-  "dependencies": {
-    "com.eflatun.scenereference" : "4.1.1"
-  }
 }

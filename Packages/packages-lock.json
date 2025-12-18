@@ -14,7 +14,9 @@
       "version": "file:com.radtad2.sceneservice",
       "depth": 0,
       "source": "embedded",
-      "dependencies": {}
+      "dependencies": {
+        "com.eflatun.scenereference": "https://github.com/starikcetin/Eflatun.SceneReference.git#4.1.1"
+      }
     },
     "com.unity.ai.navigation": {
       "version": "2.0.9",

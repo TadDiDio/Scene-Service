@@ -6,6 +6,6 @@
   "description": "An additive scene loader and bootstrapper.",
   "author": { "name": "Tad DiDio" },
   "dependencies": {
-    "com.eflatun.scenereference" : "https://github.com/starikcetin/Eflatun.SceneReference.git#4.1.1"
+    "com.eflatun.scenereference" : "4.1.1"
   }
 }

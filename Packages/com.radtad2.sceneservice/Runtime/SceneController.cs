@@ -74,6 +74,11 @@ namespace SceneService
                     await UnloadScenesAsync(dependenciesToUnload, manager);
                     _extraScenesPaths.Clear();
                 }
+                // In case the editor loaded extra scenes for testing, unload them all
+                else if (_extraScenesPaths.Count > 0)
+                {
+                    await UnloadScenesAsync(_extraScenesPaths, manager);
+                }
                 
                 // We guarantee that dependencies load first, followed by the active scene.
                 

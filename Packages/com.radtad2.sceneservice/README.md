@@ -1,17 +1,12 @@
-# Lobby Service
-A small generic lobby package that decouples front and back ends and hides all bookkeeping logic. Also ships with a local lobby 
-server so you can test your entire lobby flow with the real game UI all on one machine.
+# Scene Service
+A small package to allow for loading and unloading scenes in groups.
 
 ---
 
 ## Features
-- Supports generic backends.
-- Optional provider features which can be implemented or safely ignored without risk of NRE or bad result values.
-- Push-only front ends. 
-- Local lobby server provided for one-machine testing.
-- Optionally auto buffers calls before lobby initialization.
-- Steamworks.NET provider given as a sample.
-
+- Scene group loading based on dependencies.
+- Overrideable scene load and unload functionality
+- Automatic bootstrap scene support
 ---
 ## Disclaimer
 This system was developed as tech dev for my own projects. Due to time, it has _not_ been thoroughly tested
@@ -19,7 +14,6 @@ and assuming correctness is a dangerous game to play :).
 If you run into issues or have suggestions, feel free to open an issue on GitHub... no promises, but I’ll help when I can.
 
 ## Installation
-
 In the package manager select Install package from git url and paste the following two links. The first is a third party scene reference library which the scene service depends on and the second is the scene service:
 
 ```bash

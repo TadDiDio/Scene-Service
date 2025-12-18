@@ -101,18 +101,18 @@ namespace SceneService
 
 #if UNITY_EDITOR
                 string guid = EditorPrefs.GetString(EditorKey, "");
-                if (string.IsNullOrEmpty(guid)) throw new InvalidOperationException("SceneService: No SceneInfo selected in the Tools -> Scene Map Settings Window.");
+                if (string.IsNullOrEmpty(guid)) throw new InvalidOperationException($"No {nameof(SceneMap)} selected. Make sure to set one int Tools -> Scene Map Settings.");
 
                 string path = AssetDatabase.GUIDToAssetPath(guid);
                 var asset = AssetDatabase.LoadAssetAtPath<SceneMap>(path);
 
-                if (!asset) throw new InvalidOperationException($"SceneService: Selected SceneInfo asset at path '{path}' cannot be loaded.");
+                if (!asset) throw new InvalidOperationException($"Selected {nameof(SceneMap)} asset at path '{path}' cannot be loaded. Make sure to set one int Tools -> Scene Map Settings.");
 #else 
                 // Build injector ensures there is only one.
                 var asset = Resources.FindObjectsOfTypeAll<SceneMap>().FirstOrDefault();
 #endif
                 
-                if (!asset) throw new InvalidOperationException("SceneService: No active SceneMap loaded. Make sure to set one in Tools -> Scene Map Settings");
+                if (!asset) throw new InvalidOperationException($"No active {nameof(SceneMap)} loaded. Make sure to set one in Tools -> Scene Map Settings.");
 
                 var error = asset.Validate();
 

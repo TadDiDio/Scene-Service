@@ -50,6 +50,10 @@ namespace SceneService
         /// Gets a new scene controller.
         /// </summary>
         /// <returns>A new scene controller.</returns>
-        public static SceneController BuildSceneController() => new(SceneMap.Active);
+        public static SceneController BuildSceneController()
+        {
+            SceneLogger.Info($"Loaded SceneMap '{SceneMap.Active.ConfigName}'");
+            return new SceneController(SceneMap.Active);
+        }
     }
 }

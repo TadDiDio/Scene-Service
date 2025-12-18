@@ -120,7 +120,6 @@ namespace SceneService
                 
                 _cached = asset;
                 
-                if (Application.isPlaying) SceneLogger.Error($"Loaded SceneMap '{asset.ConfigName}'");
                 return asset;
             }
         }

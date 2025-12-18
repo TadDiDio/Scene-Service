@@ -40,6 +40,8 @@ namespace SceneService
         
         private static bool _log = true;
         
+        private const string Header = "[SceneService] ";
+        
         /// <summary>
         /// Determines whether this logger automatically logs to the console or not. Logging events will still be
         /// fired.
@@ -52,18 +54,21 @@ namespace SceneService
         
         internal static void Info(string message)
         {
+            message = Header + message;
             OnLog?.Invoke(new LogEntry(LogLevel.Info, message, GetCallerStackTrace()));
             if (_log) Debug.Log(message);
         }
 
         internal static void Warning(string message)
         {
+            message = Header + message;
             OnLog?.Invoke(new LogEntry(LogLevel.Warning, message, GetCallerStackTrace()));
             if (_log) Debug.LogWarning(message);
         }
 
         internal static void Error(string message)
         {
+            message = Header + message;
             OnLog?.Invoke(new LogEntry(LogLevel.Error, message, GetCallerStackTrace()));
             if (_log) Debug.LogError(message);
         }

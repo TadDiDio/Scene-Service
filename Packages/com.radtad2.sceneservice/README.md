@@ -47,3 +47,6 @@ In some cases, such as many multiplayer libraries, you may need custom control o
 
 ## Observing Progress
 You can read the progress of a loading scene group by subscribing to `ISceneController.OnProgress`. This is only fired for scene group loads, never for extra scene loads or for unloads.
+
+## Logging
+You can handle logs by your own custom package by calling `SceneLogger.SetImplicitLogging(false)` and subscribing to `SceneLogger.OnLog` which will send you logs directly instead of printing them.

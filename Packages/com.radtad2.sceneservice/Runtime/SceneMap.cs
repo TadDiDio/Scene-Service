@@ -45,7 +45,7 @@ namespace SceneService
         {
             if (Groups == null) return string.Empty;
 
-            if (BootstrapScene.UnsafeReason is not SceneReferenceUnsafeReason.None)
+            if (BootstrapScene.UnsafeReason is not SceneReferenceUnsafeReason.None && LoadBootstrapperFirst)
                 return "[SceneMap] Must reference a bootstrap scene.";
             
             foreach (var group in Groups)

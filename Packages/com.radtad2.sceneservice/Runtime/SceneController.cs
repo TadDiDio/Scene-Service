@@ -2,13 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using UnityEngine;
 
 namespace SceneService
 {
     public class SceneController : ISceneController
     {
-        public event Action<float> OnLoadProgressed;
+        public event Action<float> OnProgress;
         
         private bool _isLoadingGroup;
         private SceneMap _sceneMap;
@@ -21,7 +20,7 @@ namespace SceneService
         {
             _sceneMap = sceneMap;
         }
-        
+
         public async Task LoadGroupAsync(SceneGroup newGroup, ISceneManager manager = null, ReloadPolicy reloadPolicy = ReloadPolicy.All)
         {
             manager ??= _defaultManager;
@@ -86,14 +85,14 @@ namespace SceneService
 
                 while (!dependencyOperations.IsDone)
                 {
-                    OnLoadProgressed?.Invoke(dependencyOperations.Progress * 0.8f);
+                    OnProgress?.Invoke(dependencyOperations.Progress * 0.8f);
                     await Task.Yield();
                 }
 
                 var activeOperation = manager.LoadSceneAsync(newGroup.ActiveScene.Path);
                 while (!activeOperation.IsDone())
                 {
-                    OnLoadProgressed?.Invoke(0.8f + activeOperation.Progress() * 0.2f);
+                    OnProgress?.Invoke(0.8f + activeOperation.Progress() * 0.2f);
                     await Task.Yield();
                 }
                 

@@ -50,3 +50,7 @@ You can read the progress of a loading scene group by subscribing to `ISceneCont
 
 ## Logging
 You can handle logs by your own custom package by calling `SceneLogger.SetImplicitLogging(false)` and subscribing to `SceneLogger.OnLog` which will send you logs directly instead of printing them.
+
+## Notes
+- When loaded scenes, it is highly recommended to use the scene path rather than the name to avoid conflicts.
+- When loading a new group, if the currently active scene is the same as the next active scene it will always be reloaded regardless of the reload policy selected. This is to avoid conflicts when unloading its explicit dependencies when transitioning.

@@ -7,7 +7,20 @@ namespace SceneService
 {
     public class SceneController : ISceneController
     {
-        public event Action<float> OnProgress;
+        /// <summary>
+        /// Invoked when a scene group starts loading. Parameter is the name of the loading group.
+        /// </summary>
+        public event Action<string> OnLoadStart;
+        
+        /// <summary>
+        /// Invoked when a scene group progresses in loading.
+        /// </summary>
+        public event Action<ProgressInfo> OnProgress;
+        
+        /// <summary>
+        /// Invoked when a scene group finishes loading.
+        /// </summary>
+        public event Action<LoadCompleteInfo> OnLoadComplete;
         
         private bool _isLoadingGroup;
         private SceneMap _sceneMap;
@@ -39,7 +52,8 @@ namespace SceneService
             try
             {
                 _isLoadingGroup = true;
-
+                OnLoadStart?.Invoke(newGroup.GroupName);
+                
                 // Group scenes by operation
                 var dependenciesToLoad = newGroup.Dependencies.Select(r => r.Path).ToList();
 
@@ -90,23 +104,27 @@ namespace SceneService
 
                 while (!dependencyOperations.IsDone)
                 {
-                    OnProgress?.Invoke(dependencyOperations.Progress * 0.8f);
+                    var progress = dependencyOperations.Progress * 0.8f;
+                    OnProgress?.Invoke(new ProgressInfo(newGroup.GroupName, progress));
                     await Task.Yield();
                 }
 
                 var activeOperation = manager.LoadSceneAsync(newGroup.ActiveScene.Path);
                 while (!activeOperation.IsDone())
                 {
-                    OnProgress?.Invoke(0.8f + activeOperation.Progress() * 0.2f);
+                    var progress = 0.8f + activeOperation.Progress() * 0.2f;
+                    OnProgress?.Invoke(new ProgressInfo(newGroup.GroupName, progress));
                     await Task.Yield();
                 }
                 
                 manager.SetActiveScene(newGroup.ActiveScene.Path);
                 _activeGroup = newGroup;
+                OnLoadComplete?.Invoke(new LoadCompleteInfo(newGroup.GroupName, true));
             }
             catch (Exception e)
             {
                 SceneLogger.Error(e.ToString());
+                OnLoadComplete?.Invoke(new LoadCompleteInfo(newGroup.GroupName, false));
             }
             finally
             {

@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 
 namespace SceneService
@@ -7,6 +8,21 @@ namespace SceneService
     /// </summary>
     public interface ISceneController
     {
+        /// <summary>
+        /// Invoked when a scene group starts loading. Parameter is the name of the loading group.
+        /// </summary>
+        public event Action<string> OnLoadStart;
+        
+        /// <summary>
+        /// Invoked when a scene group progresses in loading.
+        /// </summary>
+        public event Action<ProgressInfo> OnProgress;
+        
+        /// <summary>
+        /// Invoked when a scene group finishes loading.
+        /// </summary>
+        public event Action<LoadCompleteInfo> OnLoadComplete;
+        
         /// <summary>
         /// Loads a group of scenes.
         /// </summary>

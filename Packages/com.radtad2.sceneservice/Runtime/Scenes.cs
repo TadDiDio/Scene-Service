@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 
 namespace SceneService
 {
-    public static class SceneService
+    public static class Scenes
     {
 #if UNITY_EDITOR
         public readonly struct EditorSceneGroup
@@ -40,7 +40,7 @@ namespace SceneService
             
             EditorGroup = new EditorSceneGroup(SceneManager.GetActiveScene().path, dependencies);
 #endif
-            if (SceneMap.Active.LoadBootstrapperFirst)
+            if (SceneMap.Active.LoadBootstrapperFirst && SceneManager.GetActiveScene().path != SceneMap.Active.BootstrapScene.Path)
             {
                 SceneManager.LoadScene(SceneMap.Active.BootstrapScene.Path, LoadSceneMode.Single);
             }

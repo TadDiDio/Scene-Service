@@ -1,3 +1,8 @@
+## [1.1.1] - 2025-12-20
+### Fixed double boot bug
+- Fixed bug where bootstrapper awaked twice if it was already loaded in editor.
+
+
 ## [1.1.0] - 2025-12-18
 ### Scene Events
 - Added scene events to controller for load start, progressed, and completed.

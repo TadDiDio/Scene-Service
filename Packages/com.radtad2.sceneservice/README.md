@@ -28,7 +28,7 @@ https://github.com/TadDiDio/Scene-Service.git?path=Packages/com.radtad2.sceneser
 1. Open the scene map settings on the toolbar from Tools -> Scene Map Settings.
 2. Create and assign a scene map in the settings window. You can create a new one by right clicking in the assets folder and selecting Create -> Scene Map
 3. Fill out the scene map. You may directly edit the asset but the scene map settings window is convenient because it is accessible without finding the asset in your project structure. See below for an explanation of the scene map.
-4. In code, all scene requests should go through an ISceneController object. You can get a scene controller by using `SceneService.BuildSceneController()`, however, you should only ever create one of these and just distribute it to any module that needs it. Dependency injection is the intent rather than a singleton like Unity's `SceneManager` class.
+4. In code, all scene requests should go through an ISceneController object. You can get a scene controller by using `Scenes.BuildSceneController()`, however, you should only ever create one of these and just distribute it to any module that needs it. Dependency injection is the intent rather than a singleton like Unity's `SceneManager` class.
 5. You can now use this object to swap between scene groups defined in the scene map, add and remove extra scenes, and even inject custom managers when you need to define how scenes should be loaded like in the case of some multiplayer packages.
 
 ## Scene Map
@@ -37,7 +37,7 @@ The scene map is what controls which scenes are loaded together. There are 4 set
 ### Bootstrapping
 Next are the bootstrapping settings. You can enable or disable loading a bootstrap scene first using the `Load Boostrapper First` toggle. If unchecked, your build scene list / editor will take over and the `Bootstrap Scene` will not be used. If checked, the scene set in the `Bootstrap Scene` reference will be loaded before any other scene. 
 
-It is strongly recommended that you use the bootstrap scene as you can perform async initialization work without other modules loading too early. If you chose to use this you can also use `SceneService.EditorGroup` to read which scenes were open in the editor when entering playmode to rebuild that group or, more likely, to load the scene group where the active scene corresponds to the editor active scene (see below).
+It is strongly recommended that you use the bootstrap scene as you can perform async initialization work without other modules loading too early. If you chose to use this you can also use `Scenes.EditorGroup` to read which scenes were open in the editor when entering playmode to rebuild that group or, more likely, to load the scene group where the active scene corresponds to the editor active scene (see below).
 
 ### Scene Groups
 Scene groups are the basic unit of scene loading and unloading. Defined as the final parameter in the scene map, each group has a name, an active scene, and a list of dependencies. The name is what you must use to load it, the active scene is the scene which will be active, and the dependencies are scenes which the active scene depends on. All scenes will be loaded additively and when loading all dependencies are guaranteed to finish loading before the active scene is loaded. Similarly, when loading a group, the current active group will unload the active scene first, then all dependencies.

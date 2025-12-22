@@ -35,6 +35,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Extra 2.unity
     guid: 6e307426b9d80a145b0044872e814aca
+  - enabled: 1
+    path: Packages/dev.purrnet.purrnet/Examples/PurrnetMinimalSetup.unity
+    guid: 9d46ec3b67a9bf4438f702ec9cd0591d
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

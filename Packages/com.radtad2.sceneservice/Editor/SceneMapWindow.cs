@@ -28,6 +28,11 @@ public class SceneMapWindow : EditorWindow
             _assetPath = AssetDatabase.GUIDToAssetPath(guid);
             _settings = SceneMap.Active;
             _settingsSO = new SerializedObject(_settings);
+
+            if (_settings.LoadBootstrapperFirst)
+            {
+                EditorSceneManager.playModeStartScene = AssetDatabase.LoadAssetAtPath<SceneAsset>(_settings.BootstrapScene.Path);
+            }
         }
     }
     

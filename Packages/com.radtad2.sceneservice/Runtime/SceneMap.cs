@@ -27,6 +27,7 @@ namespace SceneService
         /// <summary>
         /// Whether to load the bootstrapper first or not.
         /// </summary>
+        [HideInInspector]
         public bool LoadBootstrapperFirst = true;
         
         /// <summary>

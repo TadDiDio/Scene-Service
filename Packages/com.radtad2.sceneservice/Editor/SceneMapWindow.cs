@@ -1,5 +1,6 @@
 using SceneService;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 
 public class SceneMapWindow : EditorWindow
@@ -79,6 +80,29 @@ public class SceneMapWindow : EditorWindow
     {
         if (_settingsSO == null) return;
 
+        var bootSceneUpdated = false;
+
+        if (_settings.LoadBootstrapperFirst)
+        {
+            GUILayout.Label("<color=green>Bootstrap scene will load first</color>", new GUIStyle {richText = true});
+            if (GUILayout.Button("Don't load Bootstrap scene first"))
+            {
+                EditorSceneManager.playModeStartScene = null;
+                _settings.LoadBootstrapperFirst = false;
+                bootSceneUpdated = true;
+            }
+        }
+        else
+        {
+            GUILayout.Label("<color=red>Bootstrap scene will not load first</color>", new GUIStyle {richText = true});
+            if (GUILayout.Button("Load Bootstrap scene first"))
+            {
+                _settings.LoadBootstrapperFirst = true;
+                EditorSceneManager.playModeStartScene = AssetDatabase.LoadAssetAtPath<SceneAsset>(_settings.BootstrapScene.Path);
+                bootSceneUpdated = true;
+            }
+        }
+        
         EditorGUILayout.LabelField("Settings", EditorStyles.boldLabel);
         EditorGUILayout.BeginVertical("box");
 
@@ -94,7 +118,14 @@ public class SceneMapWindow : EditorWindow
             enterChildren = false;
         }
 
-        if (_settingsSO.ApplyModifiedProperties()) EditorUtility.SetDirty(_settings);
+        if (_settingsSO.ApplyModifiedProperties() || bootSceneUpdated)
+        {
+            if (_settings.LoadBootstrapperFirst)
+            {
+                EditorSceneManager.playModeStartScene = AssetDatabase.LoadAssetAtPath<SceneAsset>(_settings.BootstrapScene.Path);
+            }
+            EditorUtility.SetDirty(_settings);
+        }
 
         var message = _settings.Validate();
 

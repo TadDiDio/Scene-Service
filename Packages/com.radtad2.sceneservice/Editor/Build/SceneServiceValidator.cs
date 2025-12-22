@@ -55,6 +55,12 @@ namespace SceneService
             if (!asset) throw new BuildFailedException($"SceneService: Selected SceneInfo asset at path '{path}' cannot be loaded.");
             
             Debug.Log($"[Scene Service] '{asset.ConfigName}' {nameof(SceneMap)} injected into the build for bootstrapping.");
+            
+            
+            if (asset.LoadBootstrapperFirst && UnityEngine.SceneManagement.SceneUtility.GetScenePathByBuildIndex(0) != asset.BootstrapScene.Path)
+            {
+                throw new BuildFailedException("You must set your bootstrap scene to be first in the active build profile when using Scene Service's bootstrapper mode.");
+            }
         }
     }
 }

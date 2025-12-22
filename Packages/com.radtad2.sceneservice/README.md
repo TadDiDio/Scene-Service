@@ -21,7 +21,7 @@ https://github.com/starikcetin/Eflatun.SceneReference.git#4.1.1
 ```
 
 ```bash
-https://github.com/TadDiDio/Scene-Service.git?path=Packages/com.radtad2.sceneservice#1.1.1
+https://github.com/TadDiDio/Scene-Service.git?path=Packages/com.radtad2.sceneservice#1.2.0
 ```
 
 ## Quick Start

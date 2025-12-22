@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
@@ -40,10 +41,6 @@ namespace SceneService
             
             EditorGroup = new EditorSceneGroup(SceneManager.GetActiveScene().path, dependencies);
 #endif
-            if (SceneMap.Active.LoadBootstrapperFirst && SceneManager.GetActiveScene().path != SceneMap.Active.BootstrapScene.Path)
-            {
-                SceneManager.LoadScene(SceneMap.Active.BootstrapScene.Path, LoadSceneMode.Single);
-            }
         }
 
         /// <summary>

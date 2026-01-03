@@ -14,14 +14,10 @@ and assuming correctness is a dangerous game to play :).
 If you run into issues or have suggestions, feel free to open an issue on GitHub... no promises, but I’ll help when I can.
 
 ## Installation
-In the package manager select Install package from git url and paste the following two links. The first is a third party scene reference library which the scene service depends on and the second is the scene service:
+In the package manager select Install package from git url and paste the following link:
 
 ```bash
-https://github.com/starikcetin/Eflatun.SceneReference.git#4.1.1
-```
-
-```bash
-https://github.com/TadDiDio/Scene-Service.git?path=Packages/com.radtad2.sceneservice#1.3.0
+https://github.com/TadDiDio/Scene-Service.git?path=Packages/com.radtad2.sceneservice#1.4.0
 ```
 
 ## Quick Start

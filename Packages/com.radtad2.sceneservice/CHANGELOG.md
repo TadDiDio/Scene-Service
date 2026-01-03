@@ -1,3 +1,7 @@
+## [1.4.0] - 2026-01-03
+### Added support for MPPM
+- Modded 3rd party scene reference lib to enable MPPM to work.
+
 ## [1.3.0] - 2026-01-03
 ### Fixed editor scene load bugs
 - Fixed bug where editor scene group was incorrectly assigned and bootstrap scene not being picked up without window open.

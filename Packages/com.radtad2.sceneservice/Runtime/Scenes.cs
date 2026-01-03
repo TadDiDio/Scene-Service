@@ -1,7 +1,4 @@
-using System;
-using UnityEngine;
 using System.Collections.Generic;
-using UnityEngine.SceneManagement;
 
 namespace SceneService
 {
@@ -27,22 +24,6 @@ namespace SceneService
         public static EditorSceneGroup EditorGroup;
 #endif
         
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-        private static void Initialize()
-        {
-#if UNITY_EDITOR
-            var dependencies = new List<string>();
-            for (int i = 0; i < SceneManager.sceneCount; i++)
-            {
-                var scene = SceneManager.GetSceneAt(i);
-                if (scene == SceneManager.GetActiveScene()) continue;
-                dependencies.Add(scene.path);
-            }
-            
-            EditorGroup = new EditorSceneGroup(SceneManager.GetActiveScene().path, dependencies);
-#endif
-        }
-
         /// <summary>
         /// Gets a new scene controller.
         /// </summary>

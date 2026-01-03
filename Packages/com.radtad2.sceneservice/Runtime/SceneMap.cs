@@ -105,6 +105,12 @@ namespace SceneService
                 if (string.IsNullOrEmpty(guid)) throw new InvalidOperationException($"No {nameof(SceneMap)} selected. Make sure to set one int Tools -> Scene Map Settings.");
 
                 string path = AssetDatabase.GUIDToAssetPath(guid);
+                
+                if (path == string.Empty)
+                {
+                    throw new InvalidOperationException($"No {nameof(SceneMap)} selected. Make sure to set one int Tools -> Scene Map Settings.");
+                }
+
                 var asset = AssetDatabase.LoadAssetAtPath<SceneMap>(path);
 
                 if (!asset) throw new InvalidOperationException($"Selected {nameof(SceneMap)} asset at path '{path}' cannot be loaded. Make sure to set one int Tools -> Scene Map Settings.");

@@ -1,7 +1,7 @@
 {
   "name": "com.radtad2.sceneservice",
   "displayName": "Scene Service",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "unity": "2022.3",
   "description": "An additive scene loader and bootstrapper.",
   "author": { "name": "Tad DiDio" }

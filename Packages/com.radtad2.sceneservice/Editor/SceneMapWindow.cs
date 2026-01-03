@@ -18,7 +18,7 @@ public class SceneMapWindow : EditorWindow
         window.minSize = new Vector2(420, 260);
         window.Show();
     }
-    
+
     private void OnEnable()
     {
         var guid = EditorPrefs.GetString(SceneMap.EditorKey, "");

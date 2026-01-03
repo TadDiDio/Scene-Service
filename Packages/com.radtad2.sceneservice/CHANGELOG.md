@@ -1,3 +1,7 @@
+## [1.3.0] - 2026-01-03
+### Fixed editor scene load bugs
+- Fixed bug where editor scene group was incorrectly assigned and bootstrap scene not being picked up without window open.
+
 ## [1.2.0] - 2025-12-21
 ### Fixed awake artifacts when using bootstrapper
 - Fixed bug where any loaded editor scene would call awake on some or all objects before the bootstrapper was loaded.

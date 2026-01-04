@@ -50,3 +50,6 @@ You can handle logs by your own custom package by calling `SceneLogger.SetImplic
 ## Notes
 - When loaded scenes, it is highly recommended to use the scene path rather than the name to avoid conflicts.
 - When loading a new group, if the currently active scene is the same as the next active scene it will always be reloaded regardless of the reload policy selected. This is to avoid conflicts when unloading its explicit dependencies when transitioning.
+
+## MPPM
+If using Unity's multiplayer play mode package, make sure not to set an initial scene in a scenario config or you may get unexpected behavior, particularly while testing.

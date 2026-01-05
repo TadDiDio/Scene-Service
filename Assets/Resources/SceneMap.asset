@@ -31,6 +31,7 @@ MonoBehaviour:
       guid: 312e97cfb09f88c41b26eb42e200bc72
     - asset: {fileID: 102900000, guid: faefc6aa5e0c74542a7e9c80b7cdb3b8, type: 3}
       guid: faefc6aa5e0c74542a7e9c80b7cdb3b8
+    tags: []
   - GroupName: Level 2
     ActiveScene:
       asset: {fileID: 102900000, guid: 4cbea332fac2763488971ca74e02c657, type: 3}
@@ -42,3 +43,4 @@ MonoBehaviour:
       guid: 638adc3b21d106042a7c07bf9ce705e0
     - asset: {fileID: 102900000, guid: 312e97cfb09f88c41b26eb42e200bc72, type: 3}
       guid: 312e97cfb09f88c41b26eb42e200bc72
+    tags: []

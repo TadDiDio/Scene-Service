@@ -12,12 +12,6 @@ namespace Eflatun.SceneReference
         /// <remarks>
         /// Null if missing.
         /// </remarks>
-        // public static string SceneGuidToPathMapJson
-        // {
-        //     get => EditorUserSettings.GetConfigValue(SceneGuidToPathMapJson_Key);
-        //     set => EditorUserSettings.SetConfigValue(SceneGuidToPathMapJson_Key, value);
-        // }
-
         public static string SceneGuidToPathMapJson
         {
             get => EditorPrefs.GetString(SceneGuidToPathMapJson_Key);

@@ -34,6 +34,11 @@ namespace SceneService
             _sceneMap = sceneMap;
         }
 
+        public IReadOnlyList<string> GetTagsForGroup(string groupName)
+        {
+            return _sceneMap.Groups.FirstOrDefault(g => g.GroupName == groupName)?.Tags ?? Array.Empty<string>();   
+        }
+
         public async Task LoadGroupAsync(SceneGroup newGroup, ISceneManager manager = null, ReloadPolicy reloadPolicy = ReloadPolicy.All)
         {
             manager ??= _defaultManager;

@@ -1,3 +1,7 @@
+## [1.5.0] - 2026-01-04
+### Added tags to scene groups
+- You can now add tags to scene groups to mark them with metadata.
+
 ## [1.4.0] - 2026-01-03
 ### Added support for MPPM
 - Modded 3rd party scene reference lib to enable MPPM to work.

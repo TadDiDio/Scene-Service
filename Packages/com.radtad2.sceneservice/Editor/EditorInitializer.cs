@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Eflatun.SceneReference.Editor;
 using SceneService;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -9,8 +10,12 @@ namespace Editor
     [InitializeOnLoad]
     public static class EditorInitializer
     {
-        static EditorInitializer() => EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
-        
+        static EditorInitializer()
+        {
+            SceneDataMapsGenerator.Run(true);
+            EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+        }
+
         private static void OnPlayModeStateChanged(PlayModeStateChange state)
         {
             if (state is not PlayModeStateChange.ExitingEditMode) return;

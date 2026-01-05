@@ -10,10 +10,12 @@ public class TestBootstrapper : MonoBehaviour
     {
         try
         {
-            _controller                 = SceneService.Scenes.BuildSceneController();
+            _controller                 = Scenes.BuildSceneController();
             _controller.OnLoadStart    += sceneName => Debug.Log($"Loading {sceneName}");
             _controller.OnProgress     += info      => Debug.Log($"Loading progress: {info.Progress}");
             _controller.OnLoadComplete += info      => Debug.Log($"Loaded {info.Group} with success: {info.Success}");
+            
+            Debug.Log(string.Join(", ", _controller.GetTagsForGroup("Level 1")));
             
             await _controller.LoadGroupAsync("Level 1");
         }

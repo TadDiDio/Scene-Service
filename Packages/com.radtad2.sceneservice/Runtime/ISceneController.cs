@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SceneService
@@ -23,6 +24,13 @@ namespace SceneService
         /// </summary>
         public event Action<LoadCompleteInfo> OnLoadComplete;
         
+        /// <summary>
+        /// Gets a readonly list of tags associated with a group.
+        /// </summary>
+        /// <param name="groupName">The name of the group.</param>
+        /// <returns>The tags.</returns>
+        public IReadOnlyList<string> GetTagsForGroup(string groupName);
+
         /// <summary>
         /// Loads a group of scenes.
         /// </summary>

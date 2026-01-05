@@ -103,7 +103,10 @@ public class SceneMapWindow : EditorWindow
             if (GUILayout.Button("Load Bootstrap scene first"))
             {
                 _settings.LoadBootstrapperFirst = true;
-                EditorSceneManager.playModeStartScene = AssetDatabase.LoadAssetAtPath<SceneAsset>(_settings.BootstrapScene.Path);
+                if (_settings.BootstrapScene.IsSafeAndLoaded())
+                {
+                    EditorSceneManager.playModeStartScene = AssetDatabase.LoadAssetAtPath<SceneAsset>(_settings.BootstrapScene.Path);
+                }
                 bootSceneUpdated = true;
             }
         }

@@ -17,7 +17,7 @@ If you run into issues or have suggestions, feel free to open an issue on GitHub
 In the package manager select Install package from git url and paste the following link:
 
 ```bash
-https://github.com/TadDiDio/Scene-Service.git?path=Packages/com.radtad2.sceneservice#1.4.0
+https://github.com/TadDiDio/Scene-Service.git?path=Packages/com.radtad2.sceneservice#1.5.0
 ```
 
 ## Quick Start

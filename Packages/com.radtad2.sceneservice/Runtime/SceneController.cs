@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SceneService.Unity;
+using UnityEngine.SceneManagement;
 
 namespace SceneService
 {
@@ -21,7 +23,17 @@ namespace SceneService
         /// Invoked when a scene group finishes loading.
         /// </summary>
         public event Action<LoadCompleteInfo> OnLoadComplete;
+
+        /// <summary>
+        /// Invoked when an external system begins controlling the scene flow.
+        /// </summary>
+        public event Action OnExternalControlBegin;
         
+        /// <summary>
+        /// Invoked when we regain control and load a scene group.
+        /// </summary>
+        public event Action<SceneGroup> OnExternalControlEnd;
+
         private bool _isLoadingGroup;
         private SceneMap _sceneMap;
         private SceneGroup _activeGroup;
@@ -150,6 +162,54 @@ namespace SceneService
             await LoadGroupAsync(group, manager, reloadPolicy);
         }
 
+        public async Task BeginExternalControl()
+        {
+            if (_isLoadingGroup)
+            {
+                SceneLogger.Error("Attempted to begin external control while a group was loading!");
+                return;
+            }
+            
+            if (_activeGroup == null) return;
+
+            _isLoadingGroup = true;
+            OnExternalControlBegin?.Invoke();
+            
+            await UnloadSceneAsync(_activeGroup.ActiveScene.Path, _defaultManager);
+            await UnloadScenesAsync(_activeGroup.Dependencies.Select(r => r.Path), _defaultManager);
+            await UnloadScenesAsync(_extraScenesPaths, _defaultManager);
+            
+            _extraScenesPaths.Clear();
+            _activeGroup = null;
+            _isLoadingGroup = false;
+        }
+
+        public async Task EndExternalControl(string groupName, ISceneManager manager = null, bool unloadAllRemainingExceptBootstrap = true)
+        {
+            manager ??= _defaultManager;
+            
+            if (unloadAllRemainingExceptBootstrap)
+            {
+                await UnloadAllExceptBootstrap(manager);
+            }
+            
+            await LoadGroupAsync(groupName, manager);
+            OnExternalControlEnd?.Invoke(_activeGroup);
+        }
+
+        public async Task EndExternalControl(SceneGroup newGroup, ISceneManager manager = null, bool unloadAllRemainingExceptBootstrap = true)
+        {
+            manager ??= _defaultManager;
+            
+            if (unloadAllRemainingExceptBootstrap)
+            {
+                await UnloadAllExceptBootstrap(manager);
+            }
+            
+            await LoadGroupAsync(newGroup, manager);
+            OnExternalControlEnd?.Invoke(_activeGroup);
+        }
+        
         public async Task ReloadActiveGroupAsync(ISceneManager manager = null)
         {
             await LoadGroupAsync(_activeGroup, manager);
@@ -186,6 +246,24 @@ namespace SceneService
         {
             await UnloadScenesAsync(_extraScenesPaths, manager);
             _extraScenesPaths.Clear();
+        }
+
+        private async Task UnloadAllExceptBootstrap(ISceneManager manager = null)
+        {
+            manager ??= _defaultManager;
+
+            var operation = new SceneOperationGroup();
+            int count = SceneManager.loadedSceneCount;
+            for (int i = 0; i < count; i++)
+            {
+                var scene = SceneManager.GetSceneAt(i);
+                if (scene.path != _sceneMap.BootstrapScene.Path)
+                {
+                    operation.AddOperation(manager.UnloadSceneAsync(scene.path));
+                }
+            }
+            
+            while (!operation.IsDone) await Task.Yield();
         }
         
         private async Task UnloadSceneAsync(string scenePath, ISceneManager manager = null)

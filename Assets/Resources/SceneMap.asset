@@ -18,8 +18,8 @@ MonoBehaviour:
     asset: {fileID: 102900000, guid: 99c9720ab356a0642a771bea13969a05, type: 3}
     guid: 99c9720ab356a0642a771bea13969a05
   Groups:
-  - GroupName: Level 1
-    ActiveScene:
+  - groupName: Level 1
+    activeScene:
       asset: {fileID: 102900000, guid: b31257a037591c249a5531a92e7440e4, type: 3}
       guid: b31257a037591c249a5531a92e7440e4
     dependencies:
@@ -32,8 +32,8 @@ MonoBehaviour:
     - asset: {fileID: 102900000, guid: faefc6aa5e0c74542a7e9c80b7cdb3b8, type: 3}
       guid: faefc6aa5e0c74542a7e9c80b7cdb3b8
     tags: []
-  - GroupName: Level 2
-    ActiveScene:
+  - groupName: Level 2
+    activeScene:
       asset: {fileID: 102900000, guid: 4cbea332fac2763488971ca74e02c657, type: 3}
       guid: 4cbea332fac2763488971ca74e02c657
     dependencies:

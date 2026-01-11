@@ -1,3 +1,7 @@
+## [1.6.0] - 2026-01-10
+### Support external control
+- You can pass control of scene flow to external systems. Useful in multiplayer when a server needs to control the scene flow for all clients directly.
+
 ## [1.5.0] - 2026-01-04
 ### Added tags to scene groups
 - You can now add tags to scene groups to mark them with metadata.

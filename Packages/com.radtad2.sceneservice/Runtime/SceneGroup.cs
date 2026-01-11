@@ -11,12 +11,12 @@ namespace SceneService
         /// <summary>
         /// The name of this group.
         /// </summary>
-        public string GroupName;
+        [SerializeField] private string groupName;
         
         /// <summary>
         /// The main scene to load and set as active.
         /// </summary>
-        public SceneReference ActiveScene;
+        [SerializeField] private SceneReference activeScene;
         
         /// <summary>
         /// All scenes that the active scene depends on.
@@ -24,6 +24,10 @@ namespace SceneService
         [SerializeField] private List<SceneReference> dependencies;
 
         [SerializeField] private List<string> tags;
+        
+        public string GroupName => groupName;
+        
+        public SceneReference ActiveScene => activeScene;
         
         /// <summary>
         /// A readonly list of all dependencies.
@@ -39,6 +43,6 @@ namespace SceneService
         /// Gets a new list of all scenes in this group.
         /// </summary>
         /// <returns>The scene list.</returns>
-        public List<SceneReference> All() => new(dependencies) { ActiveScene };
+        public List<SceneReference> All() => new(dependencies) { activeScene };
     }
 }

@@ -1,3 +1,7 @@
+## [1.6.1] - 2026-01-16
+### Unload order bug fix
+-  Unload active scene first when passing to external control.
+
 ## [1.6.0] - 2026-01-10
 ### Support external control
 - You can pass control of scene flow to external systems. Useful in multiplayer when a server needs to control the scene flow for all clients directly.

@@ -252,6 +252,15 @@ namespace SceneService
         {
             manager ??= _defaultManager;
 
+            var activePath = SceneManager.GetActiveScene().path;
+
+            if (activePath != _sceneMap.BootstrapScene.Path)
+            {
+                var activeOperation = new SceneOperationGroup();
+                activeOperation.AddOperation(manager.UnloadSceneAsync(activePath));
+                while (!activeOperation.IsDone) await Task.Yield();
+            }
+            
             var operation = new SceneOperationGroup();
             int count = SceneManager.loadedSceneCount;
             for (int i = 0; i < count; i++)
